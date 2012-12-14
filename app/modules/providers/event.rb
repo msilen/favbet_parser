@@ -58,7 +58,8 @@ module Providers
         #разбираю класс soccerevent, т.к перешел ко 2му событию, нужен вывод класса
         market_groups.each do |mg|
           mname=mg['market_name']
-          next if ["Half with most goals 3 way","To Win Either Half","First Team to score","Last Team to score","To Win To Nil", "Not To Lose And Over 2.5 Goals", "To Win And Over 2.5 Goals", "Goal scored in both halves", "To Win Both Halves", "To Win From Behind", "Leading at halftime and not to win", "HT/FT","Both Teams To Score Under 1.5 Goals","Both Teams To Score Over 1.5 Goals"].include? mname
+          next if ["Half with most goals 3 way","To Win Either Half","First Team to score","Last Team to score","To Win To Nil", "Not To Lose And Over 2.5 Goals", "To Win And Over 2.5 Goals", "Goal scored in both halves", "To Win Both Halves", "To Win From Behind", "Leading at halftime and not to win", "HT/FT","Both Teams To Score Under 1.5 Goals","Both Teams To Score Over 1.5 Goals","1st Half Over 0.5 and 2nd Half Over 0.5", "Time of first goal","Correct Score", "How many goals will be scored","Draw and Total Under 2.5","Draw and Total Over 2.5","2 or 3 goals in match"].include? mname
+          next if ["to score first goal and will win the match","to win by 1 goal or Draw","not to lose and Total Under 2.5", "to win by 1 goal", "to win and Total Under 2.5","to win by 2 goals","First goal","Last goal"].any?{|str|mname.include?(str)}
 
           mg['markets'].each do |market|
             outcomes=market['outcomes']
@@ -81,13 +82,14 @@ module Providers
       end
 
       def value_code(market_name,outcome,index)
-        nilnames=["Double chance","Draw no bet","Both teams to score", "Odd/even score","Money Line"]
-        to_set_value_names=["Spread","Over/Under","Over/Under (team)"]
+        nilnames=["Double chance","Draw no bet","Both teams to score", "Odd/even score","Money Line","Match winner","Penalty in the match?"," Red card"]
+        to_set_value_names=["Spread","Over/Under","Over/Under (team)","Yellow card handicap"]
         #строка94 проверяю почему не совпадает dparam1 , индекс =2 и не совпадают имена
         if nilnames.include? market_name
           return nil
         elsif to_set_value_names.include? market_name
           name_value=get_value_from_string_with_parenthesis(outcome['outcome_name'])
+          binding.pry if market_name=="Yellow card handicap"
           binding.pry unless name_value
 
           if ["Over/Under","Over/Under (team)"].include? market_name
@@ -109,7 +111,8 @@ module Providers
       #bet_variation
       def outcome_code(market_name,bet_name,index, time_code)#index для определения home_team или away_team
         outcomes={"1X" => "1X","X2"=> "X2","12"=> "12"}
-        market_codes={"Draw no bet" => ["DNB1","DNB2"],"Spread" => ["F1","F2"]}
+        market_codes={"Draw no bet" => ["DNB1","DNB2"],"Spread" => ["F1","F2"],"Match winner" => ["ML1","ML2"],"Yellow card handicap"=> ["YC_F1","YC_F2"]}
+        #желт.карточки с гандикапом
         codes_from_outcome_with_parenthesis={"Over" => "TO", "Under"=> "TU"}
         if outcomes[bet_name]
           outcomes[bet_name]
@@ -126,6 +129,10 @@ module Providers
         elsif (time_code !=0)&&(market_name=="Money Line")
           money_line_codes=["1", "X","2"]#возвращаем по индексу 
           money_line_codes[index]
+        elsif market_name=="Penalty in the match?"
+          {"Yes" => "PEN_Y", "No" => "PEN_N"}[bet_name]
+        elsif market_name==" Red card"
+          {"Yes" => "RC_Y", "No" => "RC_N"}[bet_name]
         else
           binding.pry
         end
