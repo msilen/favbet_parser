@@ -6,5 +6,16 @@ group :assets do
   gem 'coffee-rails', '~> 3.2.1'
   gem 'uglifier', '>= 1.0.3'
 end
+
+group :favbet do
+  gem 'nokogiri'
+  gem 'mechanize'
+end
+
+group :console do
+  gem 'pry'
+  gem 'pry-nav'
+end
+
 gem 'jquery-rails'
 gem "therubyracer", :group => :assets, :platform => :ruby
