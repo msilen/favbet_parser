@@ -46,10 +46,9 @@ module Providers
       events=tournament_hash['markets'][0]['tournaments'][0]['events']
       league=tournament_hash['markets'][0]['tournaments'][0]['tournament_name']
       category=tournament_hash['markets'][0]['tournaments'][0]['category_name']
-      puts "====League #{category}-#{league}===="
       events.each do |event|
         next if event['head_market'].empty?
-        SoccerEvent.new(event,@agent)
+        SoccerEvent.new(event,@agent,category,league)
       end
     end
 
@@ -65,9 +64,11 @@ module Providers
 
     class SoccerEvent
       ADDITIONAL_EVENTS_URL='https://www.favbet.com/bets/events/'
-      attr_reader :home_team,:away_team,:date,:sport
+      attr_reader :home_team,:away_team,:date,:sport,:category,:league
 
-      def initialize(event,agent)
+      def initialize(event,agent,category,league)
+        @category=category
+        @league=league
         @sport="Soccer"
         @bets=[]
         @agent=agent
@@ -78,6 +79,7 @@ module Providers
         create_headmarket_bets(event)
         get_additional_lines(event['event_id'])
         #puts "#{home_team} - #{@away_team} at #{Time.at @date}, 1 #{@bets[0].koef} X #{@bets[1].koef} 2 #{@bets[2].koef}"
+        puts "====League #{category}-#{league}===="
         puts "#{home_team} - #{@away_team} at #{Time.at @date}"
         @bets.each do |bet|
           create_or_update_bet(bet.bookmaker_event, bet.period, bet.bet_variation, bet.value, bet.koef)
