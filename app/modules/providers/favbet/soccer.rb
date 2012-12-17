@@ -79,6 +79,7 @@ module Providers
       #-----time parser----
       def parse_time(time)
         time_code=set_period(time)#код отрезка времени
+        return nil if time_code==:skip #пропускаем тайм если set_period возвращает :skip
         create_additional_bets(time['market_groups'],time_code)
       end
 
@@ -175,7 +176,7 @@ module Providers
       end
 
       def set_period(time)
-        determine_period={['Match (With ET)',0] => (-1),['Full Time',1] => 0,['1st Half',7] => 1, ['2nd Half',8] => 2} #определяем период по названию и result_type_id
+        determine_period={['Match (With ET)',0] => (-1),['Full Time',1] => 0,['1st Half',7] => 1, ['2nd Half',8] => 2,['Next Round',608] => :skip} #определяем период по названию и result_type_id
         period=determine_period.values_at([time['result_type_name'],time['result_type_id']]).first
         raise 'unexpected period' unless period
         period
