@@ -87,7 +87,7 @@ module Providers
         #разбираю класс soccerevent, т.к перешел ко 2му событию, нужен вывод класса
         market_groups.each do |mg|
           mname=mg['market_name']
-          next if ["Half with most goals 3 way","To Win Either Half","First Team to score","Last Team to score","To Win To Nil", "Not To Lose And Over 2.5 Goals", "To Win And Over 2.5 Goals", "Goal scored in both halves", "To Win Both Halves", "To Win From Behind", "Leading at halftime and not to win", "HT/FT","Both Teams To Score Under 1.5 Goals","Both Teams To Score Over 1.5 Goals","1st Half Over 1.5 and 2nd Half Over 1.5","1st Half Over 0.5 and 2nd Half Over 0.5", "Time of first goal","Correct Score", "How many goals will be scored","Draw and Total Under 2.5","Draw and Total Over 2.5","2 or 3 goals in match","Over/Under goal player","double in match","Own goal","Total corners odd or even","1 X 2 Corners"].include? mname
+          next if ["Half with most goals 3 way","To Win Either Half","First Team to score","Last Team to score","To Win To Nil", "Not To Lose And Over 2.5 Goals", "To Win And Over 2.5 Goals", "Goal scored in both halves", "To Win Both Halves", "To Win From Behind", "Leading at halftime and not to win", "HT/FT","Both Teams To Score Under 1.5 Goals","Both Teams To Score Over 1.5 Goals","1st Half Over 1.5 and 2nd Half Over 1.5","1st Half Over 0.5 and 2nd Half Over 0.5", "Time of first goal","Correct Score", "How many goals will be scored","Draw and Total Under 2.5","Draw and Total Over 2.5","2 or 3 goals in match","Over/Under goal player","double in match","Own goal","Total corners odd or even","1 X 2 Corners", "To Qualify"].include? mname
           next if ["to score first goal and will win the match","to win by 1 goal or Draw","not to lose and Total Under 2.5", "to win by 1 goal", "to win and Total Under 2.5","to win by 2 goals","First goal","Last goal","Time of the first Yellow card"].any?{|str|mname.include?(str)}
 
           mg['markets'].each do |market|
@@ -170,6 +170,7 @@ module Providers
           coname=strip_parenthesis_from_string(bet_name)
           {"Over"=> "CNR_TO","Under"=>"CNR_TU"}[coname]
         else
+          binding.pry
           raise "Unexpected outcome to set bet variation for"
 
         end
